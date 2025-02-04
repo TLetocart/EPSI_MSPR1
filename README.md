@@ -1,8 +1,8 @@
-Harvester : Logiciel / Nester : Application WEB
+# Harvester : Logiciel / Nester : Application WEB
 
-Prérequis : 
+# Prérequis : 
 
-- Installer : Python / PostgreSQL
+# Installer : Python / PostgreSQL
 
 - Dans PostGreSQL :
 BDD PostGreSQL : 
@@ -15,7 +15,7 @@ CREATE TABLE harvesters (
 );
 
 
-- Ligne de commande dans la console :
+# Ligne de commande dans la console :
  
 Installer flask (dossier nester) : pip install flask
 
@@ -25,8 +25,8 @@ Drivers pour que le navigateur accède aux infos : pip install flask-cors
 
 
 
-! Avant de lancer le serveur ! (nester.py)
-# Configuration de la base PostgreSQL
+# ! Avant de lancer le serveur ! (nester.py)
+Configuration de la base PostgreSQL
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:motdepasse@localhost/seahawks_db'
 --> Changer le motdepasse par le mot de passe défini pendant l'installation de PostgreSQL
 
