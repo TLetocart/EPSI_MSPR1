@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Résultats des Scans</title>
+    <!-- Ajouter le lien vers le fichier CSS de Bootstrap -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            margin: 20px;
+        }
+        table {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Résultats des Scans</h1>
+    <div class="table-responsive">
+        <table class="table table-bordered" id="resultsTable">
+            <thead>
+                <tr>
+                    <th>IP</th>
+                    <th>Port</th>
+                    <th>Statut</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Les résultats des scans seront ajoutés ici -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Ajouter le script JavaScript -->
+    <script>
+        // Fonction pour récupérer les résultats
+        function fetchResults() {
+            fetch('http://127.0.0.1:5000/get_results')
+                .then(response => response.json())
+                .then(data => {
+                    const tableBody = document.querySelector("#resultsTable tbody");
+                    tableBody.innerHTML = ""; // Réinitialiser la table
+
+                    // Parcourir les résultats et ajouter les lignes dans le tableau
+                    data.forEach(result => { // Changement ici pour accéder directement à "data"
+                        const row = document.createElement("tr");
+                        row.innerHTML = `
+                            <td>${result.ip}</td>
+                            <td>${result.port}</td>
+                            <td>${result.status}</td>
+                        `;
+                        tableBody.appendChild(row);
+                    });
+                })
+                .catch(error => console.error('Erreur:', error));
+        }
+
+        // Charger les résultats dès que la page est prête
+        window.onload = fetchResults;
+    </script>
+
+    <!-- Ajouter les scripts JavaScript nécessaires pour Bootstrap -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
