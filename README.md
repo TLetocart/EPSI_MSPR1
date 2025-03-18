@@ -4,7 +4,8 @@
 
 # Installer : Python / PostgreSQL
 
-- Dans PostGreSQL :
+- Création de la BDD dans PostGreSQL :
+
 BDD PostGreSQL : 
 CREATE TABLE harvesters (
     id SERIAL PRIMARY KEY,
@@ -26,9 +27,10 @@ Drivers pour que le navigateur accède aux infos : pip install flask-cors
 
 
 # ! Avant de lancer le serveur ! (nester.py)
-Configuration de la base PostgreSQL
+Configuration de la base PostgreSQL :
+
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:motdepasse@localhost/seahawks_db'
---> Changer le motdepasse par le mot de passe défini pendant l'installation de PostgreSQL
+--> Changer le motdepasse par le mot de passe défini pendant l'installation de PostgreSQL (Ligne 11 de nester.py)
 
 
 Lancer serveur : python nester.py
