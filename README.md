@@ -40,3 +40,21 @@ Lancer harvester : python harvester.py
 Accès à la page web : http://127.0.0.1:5000/
 Accès au Json : http://127.0.0.1:5000/get_results
 
+
+# ! Mise à jour auto
+Depuis Powershell : 
+Autoriser les scripts : 
+Set-ExecutionPolicy Unrestricted -Scope CurrentUser  
+
+Lancer le script :
+cd "C:\chemin\vers\ton\script"
+.\update.ps1
+
+Automatisation avec le Planificateur de Tâches
+
+1️⃣ Ouvre le Planificateur de Tâches Windows (taskschd.msc)
+2️⃣ Crée une nouvelle tâche avec Exécuter même si l'utilisateur n'est pas connecté
+3️⃣ Déclencheur : Planifier à 3h du matin chaque jour
+4️⃣ Action : Lancer PowerShell avec le script
+Programme : powershell.exe
+Argument : -ExecutionPolicy Bypass -File "C:\chemin\vers\update.ps1"
