@@ -7,10 +7,39 @@ import csv
 import requests
 import json
 
+#API
+import requests
+import platform
+import psutil
+
+# Adresse du Nester (remplace par la bonne IP)
+url = "http://192.168.1.144:5000/api/data"
+headers = {"Authorization": "MonSecretToken123"}  # Mets ton vrai token ici si besoin
+
+# Prépare les données à envoyer
+data = {
+    "hostname": platform.node(),
+    "cpu_percent": psutil.cpu_percent(interval=1),
+    "ram_percent": psutil.virtual_memory().percent,
+    "disk_percent": psutil.disk_usage('C:\\').percent  # Pour Windows
+}
+
+try:
+    response = requests.post(url, json=data, headers=headers)
+    print("Code HTTP reçu :", response.status_code)
+    print("Texte reçu :", response.text)
+    try:
+        print("Réponse du Nester (JSON):", response.json())
+    except Exception as e:
+        print("Erreur lors de la lecture du JSON :", e)
+except Exception as e:
+    print("Erreur lors de la requête :", e)
+
+
 
 # Fonction pour envoyer les résultats au serveur Flask
 def send_results_to_server(results):
-    server_url = "http://10.165.1.1:5000/upload_results"  
+    server_url = "http://192.168.1.144:5000/upload_results"  
     payload = {"results": results}
     headers = {"Content-Type": "application/json"}
     
@@ -31,7 +60,7 @@ def send_results_to_server(results):
 
 def scan_network():
     scanner = nmap.PortScanner()
-    ip_range = "10.165.1.0/24"  
+    ip_range = "192.168.1.144/24"  
     ports = "22,80,443" 
 
     try:
@@ -39,7 +68,7 @@ def scan_network():
 
         # Scanner tous les ports ouverts
         result_label.config(text="Scan en cours, veuillez patienter...")
-        scanner.scan(hosts=ip_range, ports=ports, arguments="-T4 -Pn")
+        scanner.scan(hosts=ip_range, ports=ports, arguments="-T4")
 
 
         # Générer un nom de fichier avec la date du jour
