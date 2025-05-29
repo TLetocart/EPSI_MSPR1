@@ -1,2 +1,0 @@
-Nom_Machine,Adresse_IP,Ports_ouverts,Statuts
-PC-Thomas.lan,192.168.1.144,"135, 139, 445, 902, 912, 5000, 5432","135/open, 139/open, 445/open, 902/open, 912/open, 5000/open, 5432/open"

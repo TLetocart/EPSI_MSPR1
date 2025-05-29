@@ -1,24 +1,24 @@
 import tkinter as tk
-from tkinter import ttk, messagebox, filedialog, PhotoImage
+from tkinter import ttk, messagebox, filedialog
 import nmap
 from datetime import datetime
-import os
-import csv
 import ipaddress
+import csv
 import requests
 import json
 
+
 # Fonction pour envoyer les résultats au serveur Flask
 def send_results_to_server(results):
-    server_url = "http://192.168.1.144:5000/upload_results"  
+    server_url = "http://10.165.1.1:5000/upload_results"  
     payload = {"results": results}
     headers = {"Content-Type": "application/json"}
+    
+    # Afficher les données envoyées pour debug
+    print("Sending data to server:", json.dumps(payload, indent=4))
 
     try:
         response = requests.post(server_url, data=json.dumps(payload), headers=headers)
-        # Debugging response
-        print(f"Response status code: {response.status_code}")
-        print(f"Response content: {response.text}")
         
         if response.status_code == 200:
             result_label.config(text="Données envoyées au serveur avec succès!")
@@ -28,15 +28,19 @@ def send_results_to_server(results):
     except requests.exceptions.RequestException as e:
         messagebox.showerror("Erreur", f"Une erreur s'est produite lors de l'envoi des données : {e}")
 
+
 def scan_network():
     scanner = nmap.PortScanner()
-    ip_range = "192.168.1.144"  
+    ip_range = "10.165.1.0/24"  
+    ports = "22,80,443" 
 
     try:
         result_label.config(text="Scan en cours, veuillez patienter...")
 
         # Scanner tous les ports ouverts
-        scanner.scan(hosts=ip_range, arguments="-T4 -Pn --open")
+        result_label.config(text="Scan en cours, veuillez patienter...")
+        scanner.scan(hosts=ip_range, ports=ports, arguments="-T4 -Pn")
+
 
         # Générer un nom de fichier avec la date du jour
         current_date = datetime.now().strftime("%Y-%m-%d_%H-%M")
@@ -86,13 +90,11 @@ def scan_network():
 # Fonction pour charger un fichier CSV
 def load_csv(filepath=None):
     try:
-        # Si filepath est None, demander à l'utilisateur de sélectionner un fichier
         if filepath is None:
             filepath = filedialog.askopenfilename(
                 title="Sélectionner un fichier CSV",
                 filetypes=(("CSV Files", "*.csv"), ("All Files", "*.*"))
             )
-            # Si l'utilisateur annule la sélection, ne rien faire
             if not filepath:
                 return
 

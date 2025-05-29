@@ -4,6 +4,7 @@
 
 # Installer : Python / PostgreSQL
 
+- PgAdmin
 - Création de la BDD dans PostGreSQL :
 
 BDD PostGreSQL : 
@@ -39,4 +40,3 @@ Lancer harvester : python harvester.py
 
 Accès à la page web : http://127.0.0.1:5000/
 Accès au Json : http://127.0.0.1:5000/get_results
-

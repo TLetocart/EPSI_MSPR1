@@ -7,7 +7,8 @@ app = Flask(__name__)
 CORS(app)  # Permet d'accepter les requêtes du Harvester
 
 # Configuration de la base PostgreSQL
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:motdepasse@localhost/seahawks_db'
+###### Pensez à indiquer le mdp !
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:poketom@localhost/seahawks_db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Initialisation de SQLAlchemy
@@ -33,11 +34,14 @@ def home():
 @app.route('/upload_results', methods=['POST'])
 def receive_results():
     data = request.json
+    print("Data received:", data)  # Debug pour afficher les données reçues
+
     if not data or "results" not in data:
         return jsonify({"error": "Données invalides"}), 400
 
     # Sauvegarde des résultats en base de données
     for entry in data["results"]:
+        status = entry['status'][:10]
         existing_scan = ScanResult.query.filter_by(ip_address=entry["ip"]).first()  # Chercher si l'IP existe déjà
         if existing_scan:
             # Si l'entrée existe, on met à jour les données
@@ -45,11 +49,12 @@ def receive_results():
             existing_scan.status = entry["status"]
         else:
             # Si l'entrée n'existe pas, on en crée une nouvelle
-            new_scan = ScanResult(ip_address=entry["ip"], port=entry["port"], status=entry["status"])
-            db.session.add(new_scan)
+            new_scan_result = ScanResult(ip_address=entry['ip'], port=entry['port'], status=status)
+            db.session.add(new_scan_result)
 
     db.session.commit()
     return jsonify({"message": "Données reçues et stockées avec succès"}), 200
+
 
 # Endpoint pour récupérer tous les résultats (pour l'interface web)
 @app.route('/get_results', methods=['GET'])
@@ -60,3 +65,4 @@ def get_results():
 # Lancer le serveur
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5000, debug=True)
+
