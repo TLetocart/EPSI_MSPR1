@@ -12,23 +12,25 @@ import platform
 import psutil
 
 # NESTER ADRESSE
-url = "http://192.168.1.144:5000/api/data"
+url = "http://192.168.1.159:5000/api/data"
 MY_TOKEN = "token_harvester1"
 HEADERS = {
     "Content-Type": "application/json",
     "Authorization": MY_TOKEN
 }
 
+
 # Prépare les données à envoyer
 data = {
     "hostname": platform.node(),
     "cpu_percent": psutil.cpu_percent(interval=1),
     "ram_percent": psutil.virtual_memory().percent,
-    "disk_percent": psutil.disk_usage('C:\\').percent  # Pour Windows
+    "disk_percent": psutil.disk_usage("C:\\" if platform.system() == "Windows" else "/").percent
 }
 
+
 try:
-    response = requests.post(url, json=data, headers=headers)
+    response = requests.post(url, json=data, headers=HEADERS)
     print("Code HTTP reçu :", response.status_code)
     print("Texte reçu :", response.text)
     try:
@@ -42,15 +44,13 @@ except Exception as e:
 
 # Fonction pour envoyer les résultats au serveur Flask
 def send_results_to_server(results):
-    server_url = "http://192.168.1.144:5000/upload_results"  
+    server_url = "http://192.168.1.159:5000/upload_results"
     payload = {"results": results}
-    headers = {"Content-Type": "application/json"}
-    
-    # Afficher les données envoyées pour debug
+
     print("Sending data to server:", json.dumps(payload, indent=4))
 
     try:
-        response = requests.post(url, json=data, headers=HEADERS)        
+        response = requests.post(server_url, data=json.dumps(payload), headers=HEADERS)
         if response.status_code == 200:
             result_label.config(text="Données envoyées au serveur avec succès!")
         else:
@@ -62,7 +62,7 @@ def send_results_to_server(results):
 
 def scan_network():
     scanner = nmap.PortScanner()
-    ip_range = "192.168.1.144/24"  
+    ip_range = "192.168.1.159/24"  
     ports = "22,80,443" 
 
     try:
