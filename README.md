@@ -33,10 +33,20 @@ Configuration de la base PostgreSQL :
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:motdepasse@localhost/seahawks_db'
 --> Changer le motdepasse par le mot de passe défini pendant l'installation de PostgreSQL (Ligne 11 de nester.py)
 
+# ! Avant de lancer le Harvester ! (harvester.py)
+Changer les URL  :
+        ip_range = "192.168.1.144/24"  --> Voir son IP
+
+Changer le token :
+    MY_TOKEN = "token_harvester1"
+
 
 Lancer serveur : python nester.py
 Lancer harvester : python harvester.py
 
-
+Exemple : 
 Accès à la page web : http://127.0.0.1:5000/
 Accès au Json : http://127.0.0.1:5000/get_results
+
+# ! Test de connexion du Harvester vers Nester : 
+harvester/ping/send_to_nester
