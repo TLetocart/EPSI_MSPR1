@@ -6,15 +6,18 @@ import ipaddress
 import csv
 import requests
 import json
-
 #API
 import requests
 import platform
 import psutil
 
-# Adresse du Nester (remplace par la bonne IP)
+# NESTER ADRESSE
 url = "http://192.168.1.144:5000/api/data"
-headers = {"Authorization": "MonSecretToken123"}  # Mets ton vrai token ici si besoin
+MY_TOKEN = "token_harvester1"
+HEADERS = {
+    "Content-Type": "application/json",
+    "Authorization": MY_TOKEN
+}
 
 # Prépare les données à envoyer
 data = {
@@ -47,8 +50,7 @@ def send_results_to_server(results):
     print("Sending data to server:", json.dumps(payload, indent=4))
 
     try:
-        response = requests.post(server_url, data=json.dumps(payload), headers=headers)
-        
+        response = requests.post(url, json=data, headers=HEADERS)        
         if response.status_code == 200:
             result_label.config(text="Données envoyées au serveur avec succès!")
         else:

@@ -5,19 +5,28 @@ from datetime import datetime
 import os
 import csv
 
-# ========== CONFIGURATION ARCHIVES ==========
+# ---------- CONFIGURATION ARCHIVES ----------------
 
 ARCHIVES_DIR = os.path.join(os.path.dirname(__file__), "archives")
 os.makedirs(ARCHIVES_DIR, exist_ok=True)
 
-# Pour les POST sur /api/data (santé système)
+# /api/data 
 CSV_FILE = os.path.join(ARCHIVES_DIR, "data_received.csv")
-# Pour les POST sur /upload_results (scans, tout Harvester)
+# /upload_results
 CSV_ARCHIVE = os.path.join(ARCHIVES_DIR, "harvesters_history.csv")
 
-API_SECRET = "MonSecretToken123"
 
-# ========== FLASK & BDD ==========
+# ------------- TOKEN ----------------------------
+
+def load_tokens(filename="tokens.txt"):
+    if not os.path.isfile(filename):
+        return set()
+    with open(filename, "r", encoding="utf-8") as f:
+        return set(line.strip() for line in f if line.strip())
+
+
+# -------------- FLASK & BDD --------------------
+
 app = Flask(__name__)
 CORS(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:poketom@localhost/seahawks_db'
@@ -33,7 +42,8 @@ class ScanResult(db.Model):
 with app.app_context():
     db.create_all()
 
-# ========== ROUTES ==========
+
+# --------------- ROUTES ------------------
 
 @app.route('/')
 def home():
@@ -42,9 +52,13 @@ def home():
     except:
         return "API Seahawks Nester prête !"
 
-# API santé/infos système
 @app.route('/api/data', methods=['POST'])
 def api_receive_data():
+    auth_header = request.headers.get("Authorization")
+    authorized_tokens = load_tokens() 
+    if not auth_header or auth_header not in authorized_tokens:
+        return jsonify({"error": "Unauthorized"}), 401
+
     data = request.json
     print(f"Data received: {data}")
 
@@ -63,15 +77,21 @@ def api_receive_data():
         writer.writerow(row)
     return jsonify({"status": "success", "received_data": data}), 200
 
-# API upload_results : stocke en base ET archive tout
+# ------- API upload_results : SAVE DATABASE AND ARCHIVES -----------
+
 @app.route('/upload_results', methods=['POST'])
 def receive_results():
+    auth_header = request.headers.get("Authorization")
+    authorized_tokens = load_tokens()  
+    if not auth_header or auth_header not in authorized_tokens:
+        return jsonify({"error": "Unauthorized"}), 401
+
     data = request.json
     print("Data received (upload_results):", data)
     if not data or "results" not in data:
         return jsonify({"error": "Données invalides"}), 400
 
-    # 1. Sauvegarde d'archive (CSV)
+    # Save Archives (CSV)
     file_exists = os.path.isfile(CSV_ARCHIVE)
     with open(CSV_ARCHIVE, "a", newline='', encoding="utf-8") as csvfile:
         writer = csv.writer(csvfile)
@@ -88,7 +108,7 @@ def receive_results():
                 entry.get("status", "")
             ])
 
-    # 2. Stockage en base de données (ScanResult)
+    # Save database (ScanResult)
     for entry in data["results"]:
         status = str(entry.get('status', ''))[:10]
         ip = entry.get("ip", "")
@@ -104,6 +124,11 @@ def receive_results():
 
 @app.route('/get_results', methods=['GET'])
 def get_results():
+    auth_header = request.headers.get("Authorization")
+    authorized_tokens = load_tokens() 
+    if not auth_header or auth_header not in authorized_tokens:
+        return jsonify({"error": "Unauthorized"}), 401
+
     scans = ScanResult.query.all()
     return jsonify([{
         "ip": scan.ip_address,
