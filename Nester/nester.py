@@ -29,7 +29,7 @@ def load_tokens(filename="tokens.txt"):
 
 app = Flask(__name__)
 CORS(app)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:poketom@localhost/seahawks_db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:psql@localhost/seahawks_db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
@@ -135,6 +135,43 @@ def get_results():
         "port": scan.port,
         "status": scan.status
     } for scan in scans])
+
+
+
+
+# ---------- Supervision ----------------
+# Génère le bouton actualiser de la page de supervision
+
+from flask import send_file, redirect, url_for, request
+import subprocess
+
+SUPERVISION_SCRIPT = "/home/thomas/EPSI_MSPR1-main/Nester/scripts/supervision/rapport_supervision.sh"
+SUPERVISION_HTML = "/home/thomas/EPSI_MSPR1-main/Nester/scripts/supervision/supervision_report.html"
+
+@app.route('/supervision', methods=['GET', 'POST'])
+def show_supervision():
+    if request.method == 'POST':
+        subprocess.run([SUPERVISION_SCRIPT])
+        return redirect(url_for('show_supervision'))
+    with open(SUPERVISION_HTML, 'r', encoding='utf-8') as f:
+        page = f.read()
+    bouton = """
+    <div style="text-align:center;margin:18px;">
+      <form method="post" action="/supervision">
+        <button type="submit" style="font-size:1.1em;padding:8px 24px;border-radius:8px;background:#1761a0;color:white;border:none;cursor:pointer;">
+          Générer une supervision à jour
+        </button>
+      </form>
+    </div>
+    """
+    page = page.replace("</h1>", "</h1>" + bouton, 1)
+    return page
+
+
+
+
+
+
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5000, debug=True)
