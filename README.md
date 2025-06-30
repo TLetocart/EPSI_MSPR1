@@ -50,3 +50,67 @@ Accès au Json : http://127.0.0.1:5000/get_results
 
 # ! Test de connexion du Harvester vers Nester : 
 harvester/ping/send_to_nester
+
+
+# ! MSPR 3
+Commandes essentielles :
+ 
+Démarrer PostGre : 
+sudo systemctl start postgresql
+Vérifier statut : 	
+sudo systemctl status postgresql
+Arrêter : 
+	sudo systemctl stop postgresql
+Redémarrer : 
+sudo systemctl restart postgresql
+
+Démarrer PostGre au démarrage : 
+	sudo systemctl enable postgresql
+
+Connexion user postgres (superAdmin): 
+sudo -i -u postgres
+
+
+Commande PostGreSQL : 
+
+Se connecter à PostgreSQL en tant qu’utilisateur 'postgres'
+sudo -i -u postgres
+
+Se connecter à une base précise 
+psql -U postgres -d mspr3
+
+Entrer dans le shell : 
+		psql -d mspr3
+
+Lister les bases de données
+\l
+
+Lister les tables
+\dt
+
+Afficher la structure d’une table
+\d nom_table
+
+Voir les index
+\di
+
+Voir les utilisateurs
+\du
+
+Voir les vues
+\dv
+
+Voir les droits sur une table/vue
+\z nom_table_ou_vue
+
+Quitter psql
+\q
+
+Commandes supplémentaires : 
+
+Sauvegarde : 
+crontab -l
+
+	Restaurer depuis une sauvegarde : 
+pg_restore -U postgres -d mspr3 /home/backup/mspr3_2024-06-05_1400.dump
+
